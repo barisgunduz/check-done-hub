@@ -19,9 +19,14 @@ export default function TaskItem({ task, onToggle, onDelete }: Props) {
                     )}
                 </View>
 
-                <Text style={[styles.title, task.completed && styles.done]}>
-                    {task.title}
-                </Text>
+                <View>
+                    <Text style={[styles.title, task.completed && styles.done]}>
+                        {task.title}
+                    </Text>
+                    {task.category && (
+                        <Text style={styles.categoryLabel}>{task.category}</Text>
+                    )}
+                </View>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={onDelete} style={styles.deleteBtn}>
@@ -71,5 +76,10 @@ const styles = StyleSheet.create({
     },
     deleteBtn: {
         paddingLeft: 10,
+    },
+    categoryLabel: {
+        color: colors.subtext,
+        fontSize: 12,
+        marginTop: 2,
     },
 })

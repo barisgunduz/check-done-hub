@@ -3,4 +3,7 @@ export type Task = {
 	title: string;
 	completed: boolean;
 	createdAt: string;
+	completedAt?: string;
+	category?: string;
+	reminderDate?: string;
 };

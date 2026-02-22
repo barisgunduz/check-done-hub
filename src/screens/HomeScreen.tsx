@@ -22,7 +22,7 @@ export default function HomeScreen() {
     const completedCount = tasks.filter(t => t.completed).length
     const activeCount = tasks.filter(t => !t.completed).length
 
-    const handleAddTask = (title: string) => {
+    const handleAddTask = (title: string, category?: string) => {
         const totalCount = tasks.length
 
         if (!isPremium && totalCount >= 20) {
@@ -39,7 +39,7 @@ export default function HomeScreen() {
             return
         }
 
-        addTask(title)
+        addTask(title, category)
     }
 
     return (

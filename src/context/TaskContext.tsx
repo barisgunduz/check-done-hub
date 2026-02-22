@@ -6,10 +6,9 @@ import { usePremium } from "./PremiumContext"
 
 type TaskContextType = {
     tasks: Task[]
-    addTask: (title: string) => void
+    addTask: (title: string, category?: string) => void
     toggleTask: (id: string) => void
     deleteTask: (id: string) => void
-    limitReached: boolean
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined)
@@ -26,7 +25,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         saveTasks(tasks)
     }, [tasks])
 
-    const addTask = (title: string) => {
+    const addTask = (title: string, category?: string) => {
         const activeCount = tasks.filter(t => !t.completed).length
 
         const newTask: Task = {
@@ -34,6 +33,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
             title,
             completed: false,
             createdAt: new Date().toISOString(),
+            category,
         }
 
         setTasks(prev => [newTask, ...prev])
@@ -41,7 +41,15 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
 
     const toggleTask = (id: string) => {
         setTasks(prev =>
-            prev.map(t => (t.id === id ? { ...t, completed: !t.completed } : t))
+            prev.map(t =>
+                t.id === id
+                    ? {
+                        ...t,
+                        completed: !t.completed,
+                        completedAt: !t.completed ? new Date().toISOString() : undefined,
+                    }
+                    : t
+            )
         )
     }
 
@@ -50,11 +58,10 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const activeCount = tasks.filter(t => !t.completed).length
-    const limitReached = !isPremium && activeCount >= 20
 
     return (
         <TaskContext.Provider
-            value={{ tasks, addTask, toggleTask, deleteTask, limitReached }}
+            value={{ tasks, addTask, toggleTask, deleteTask }}
         >
             {children}
         </TaskContext.Provider>
