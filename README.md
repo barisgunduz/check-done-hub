@@ -151,4 +151,4 @@ No clutter. Just getting things done.
 
 If you find this project useful, consider supporting me! 😊
 
-[![Buy me coffee](https://barisgunduz.com/demo/buymeacoffee/buymeacoffee.png)](http://google.com.au/)
+[![Buy me coffee](https://barisgunduz.com/demo/buymeacoffee/buymeacoffee.png)](https://buymeacoffee.com/barisgunduz)
