@@ -1,5 +1,12 @@
-import { useState } from "react"
-import { Modal, View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-native"
+import { useState, useRef, useEffect } from "react"
+import {
+    Modal,
+    View,
+    TextInput,
+    TouchableOpacity,
+    Text,
+    StyleSheet,
+} from "react-native"
 import { colors } from "../theme/colors"
 
 type Props = {
@@ -10,6 +17,17 @@ type Props = {
 
 export default function AddTaskModal({ visible, onClose, onAdd }: Props) {
     const [title, setTitle] = useState("")
+    const inputRef = useRef<TextInput>(null)
+
+    useEffect(() => {
+        if (visible) {
+            const timer = setTimeout(() => {
+                inputRef.current?.focus()
+            }, 100)
+
+            return () => clearTimeout(timer)
+        }
+    }, [visible])
 
     const handleAdd = () => {
         if (!title.trim()) return
@@ -23,11 +41,15 @@ export default function AddTaskModal({ visible, onClose, onAdd }: Props) {
             <View style={styles.overlay}>
                 <View style={styles.modal}>
                     <TextInput
+                        ref={inputRef}
                         placeholder="Yeni görev"
                         placeholderTextColor={colors.subtext}
                         value={title}
                         onChangeText={setTitle}
                         style={styles.input}
+                        returnKeyType="done"
+                        onSubmitEditing={handleAdd}
+                        blurOnSubmit={false}
                     />
 
                     <TouchableOpacity style={styles.button} onPress={handleAdd}>

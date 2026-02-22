@@ -29,8 +29,6 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     const addTask = (title: string) => {
         const activeCount = tasks.filter(t => !t.completed).length
 
-        if (!isPremium && activeCount >= 20) return
-
         const newTask: Task = {
             id: uuidv4(),
             title,

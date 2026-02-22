@@ -15,7 +15,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">
 export default function HomeScreen() {
     const { tasks, addTask, toggleTask, deleteTask } = useTasks()
     const [modalVisible, setModalVisible] = useState(false)
-    const { isPremium, setPremium } = usePremium()
+    const { isPremium } = usePremium()
     const navigation = useNavigation<NavigationProp>()
 
     const totalCount = tasks.length
@@ -23,14 +23,16 @@ export default function HomeScreen() {
     const activeCount = tasks.filter(t => !t.completed).length
 
     const handleAddTask = (title: string) => {
-        const activeCount = tasks.filter(t => !t.completed).length
+        const totalCount = tasks.length
 
-        if (!isPremium && activeCount >= 20) {
+        if (!isPremium && totalCount >= 20) {
             Alert.alert(
                 "Limit doldu",
-                "Free plan ile maksimum 20 aktif görev ekleyebilirsin. Sınırsız görev için Premium’a geç.",
+                totalCount > 20
+                    ? "20’den fazla görevin var. Yeni görev eklemek için bazılarını sil veya Premium’a geç."
+                    : "Free plan ile maksimum 20 görev ekleyebilirsin. Sınırsız görev için Premium’a geç.",
                 [
-                    { text: "Vazgeç", style: "cancel" },
+                    { text: "Tamam", style: "cancel" },
                     { text: "Premium Ol", onPress: () => navigation.navigate("Premium") },
                 ]
             )
@@ -44,20 +46,8 @@ export default function HomeScreen() {
         <View style={styles.container}>
             <Text style={styles.title}>Bugünün Görevleri</Text>
 
-            <Text style={{ color: "gray", marginBottom: 10 }}>
-                {isPremium ? "Premium Aktif" : "Free Kullanıcı"}
-            </Text>
-
-            <TouchableOpacity onPress={() => setPremium(!isPremium)}>
-                <Text style={{ color: "#fff", marginBottom: 20 }}>
-                    Premium Toggle (Test)
-                </Text>
-            </TouchableOpacity>
-
             <Text style={styles.counter}>
-                {isPremium
-                    ? `${activeCount}/${totalCount} aktif`
-                    : `${activeCount}/20 aktif`}
+                {isPremium ? `${totalCount} görev` : `${totalCount}/20 görev`}
             </Text>
 
             <ProgressBar completed={completedCount} total={totalCount} />
