@@ -23,8 +23,15 @@ export default function TaskItem({ task, onToggle, onDelete }: Props) {
                     <Text style={[styles.title, task.completed && styles.done]}>
                         {task.title}
                     </Text>
+
                     {task.category && (
                         <Text style={styles.categoryLabel}>{task.category}</Text>
+                    )}
+
+                    {task.reminderDate && (
+                        <Text style={styles.reminderText}>
+                            ⏰ {new Date(task.reminderDate).toLocaleString()}
+                        </Text>
                     )}
                 </View>
             </TouchableOpacity>
@@ -62,7 +69,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     checked: {
-        backgroundColor: "#30D158", // yeşil
+        backgroundColor: "#30D158",
         borderColor: "#30D158",
     },
     title: {
@@ -80,6 +87,11 @@ const styles = StyleSheet.create({
     categoryLabel: {
         color: colors.subtext,
         fontSize: 12,
+        marginTop: 2,
+    },
+    reminderText: {
+        color: colors.subtext,
+        fontSize: 11,
         marginTop: 2,
     },
 })

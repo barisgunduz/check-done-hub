@@ -22,7 +22,11 @@ export default function HomeScreen() {
     const completedCount = tasks.filter(t => t.completed).length
     const activeCount = tasks.filter(t => !t.completed).length
 
-    const handleAddTask = (title: string, category?: string) => {
+    const handleAddTask = (
+        title: string,
+        category?: string,
+        reminderDate?: string
+    ) => {
         const totalCount = tasks.length
 
         if (!isPremium && totalCount >= 20) {
@@ -39,7 +43,7 @@ export default function HomeScreen() {
             return
         }
 
-        addTask(title, category)
+        addTask(title, category, reminderDate)
     }
 
     return (

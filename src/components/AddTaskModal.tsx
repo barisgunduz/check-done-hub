@@ -10,34 +10,58 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from "react-native"
+import DateTimePicker, {
+    DateTimePickerEvent,
+} from "@react-native-community/datetimepicker"
 import { colors } from "../theme/colors"
 import { DEFAULT_CATEGORIES } from "../constants/categories"
 
 type Props = {
     visible: boolean
     onClose: () => void
-    onAdd: (title: string, category?: string) => void
+    onAdd: (
+        title: string,
+        category?: string,
+        reminderDate?: string
+    ) => void
 }
 
 export default function AddTaskModal({ visible, onClose, onAdd }: Props) {
     const [title, setTitle] = useState("")
-    const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
+    const [selectedCategory, setSelectedCategory] = useState<
+        string | undefined
+    >()
+    const [reminderDate, setReminderDate] = useState<Date | undefined>()
+    const [showPicker, setShowPicker] = useState(false)
     const inputRef = useRef<TextInput>(null)
 
     useEffect(() => {
         if (visible) {
+            setReminderDate(undefined)
+            setSelectedCategory(undefined)
+            setShowPicker(false)
+
             const timer = setTimeout(() => {
                 inputRef.current?.focus()
             }, 100)
+
             return () => clearTimeout(timer)
         }
     }, [visible])
 
     const handleAdd = () => {
         if (!title.trim()) return
-        onAdd(title.trim(), selectedCategory)
+
+        onAdd(
+            title.trim(),
+            selectedCategory,
+            reminderDate ? reminderDate.toISOString() : undefined
+        )
+
         setTitle("")
+        setReminderDate(undefined)
         setSelectedCategory(undefined)
+        setShowPicker(false)
         onClose()
     }
 
@@ -52,32 +76,82 @@ export default function AddTaskModal({ visible, onClose, onAdd }: Props) {
                         keyboardShouldPersistTaps="handled"
                         contentContainerStyle={{ paddingBottom: 20 }}
                     >
-                        <TextInput
-                            ref={inputRef}
-                            placeholder="Yeni görev"
-                            placeholderTextColor={colors.subtext}
-                            value={title}
-                            onChangeText={setTitle}
-                            style={styles.input}
-                            returnKeyType="done"
-                            onSubmitEditing={handleAdd}
-                            blurOnSubmit={false}
-                        />
+                        {/* INPUT + DATE BUTTON */}
+                        <View style={styles.inputRow}>
+                            <TextInput
+                                ref={inputRef}
+                                placeholder="Yeni görev"
+                                placeholderTextColor={colors.subtext}
+                                value={title}
+                                onChangeText={setTitle}
+                                style={styles.input}
+                                returnKeyType="done"
+                                onSubmitEditing={handleAdd}
+                                blurOnSubmit={false}
+                            />
 
+                            <TouchableOpacity
+                                style={styles.dateButton}
+                                onPress={() => setShowPicker(true)}
+                            >
+                                <Text style={styles.dateButtonText}>📅</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* SEÇİLİ TARİH LABEL */}
+                        {reminderDate && (
+                            <Text style={styles.reminderLabel}>
+                                ⏰ {reminderDate.toLocaleString()}
+                            </Text>
+                        )}
+
+                        {/* DATE PICKER – DÜZELTİLDİ */}
+                        {showPicker && (
+                            <View style={styles.pickerContainer}>
+                                <DateTimePicker
+                                    value={reminderDate || new Date()}
+                                    mode="datetime"
+                                    minimumDate={new Date()}
+                                    display="spinner"
+                                    themeVariant="light"
+                                    onChange={(
+                                        event: DateTimePickerEvent,
+                                        selectedDate?: Date
+                                    ) => {
+                                        if (selectedDate) {
+                                            setReminderDate(selectedDate)
+                                        }
+                                    }}
+                                />
+
+                                <TouchableOpacity
+                                    style={styles.pickerDoneButton}
+                                    onPress={() => setShowPicker(false)}
+                                >
+                                    <Text style={styles.pickerDoneText}>
+                                        Onayla
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {/* KATEGORİLER */}
                         <View style={styles.categoryRow}>
                             {DEFAULT_CATEGORIES.map(cat => (
                                 <TouchableOpacity
                                     key={cat}
                                     style={[
                                         styles.categoryBtn,
-                                        selectedCategory === cat && styles.categoryBtnActive,
+                                        selectedCategory === cat &&
+                                        styles.categoryBtnActive,
                                     ]}
                                     onPress={() => setSelectedCategory(cat)}
                                 >
                                     <Text
                                         style={[
                                             styles.categoryText,
-                                            selectedCategory === cat && styles.categoryTextActive,
+                                            selectedCategory === cat &&
+                                            styles.categoryTextActive,
                                         ]}
                                     >
                                         {cat}
@@ -86,7 +160,11 @@ export default function AddTaskModal({ visible, onClose, onAdd }: Props) {
                             ))}
                         </View>
 
-                        <TouchableOpacity style={styles.button} onPress={handleAdd}>
+                        {/* EKLE */}
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={handleAdd}
+                        >
                             <Text style={{ color: "#000" }}>Ekle</Text>
                         </TouchableOpacity>
 
@@ -113,12 +191,51 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 20,
         maxHeight: "80%",
     },
+    inputRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 12,
+    },
     input: {
+        flex: 1,
         backgroundColor: colors.bg,
         color: colors.text,
         padding: 14,
         borderRadius: 12,
+        marginRight: 8,
+    },
+    dateButton: {
+        backgroundColor: "#fff",
+        width: 48,
+        height: 48,
+        borderRadius: 12,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    dateButtonText: {
+        fontSize: 18,
+    },
+    reminderLabel: {
+        color: colors.subtext,
+        marginBottom: 8,
+        fontSize: 12,
+    },
+    pickerContainer: {
+        backgroundColor: colors.whiteBg,
+        borderRadius: 12,
+        padding: 8,
         marginBottom: 12,
+    },
+    pickerDoneButton: {
+        marginTop: 8,
+        backgroundColor: "#fff",
+        paddingVertical: 10,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    pickerDoneText: {
+        color: "#000",
+        fontWeight: "600",
     },
     button: {
         backgroundColor: "#fff",

@@ -2,11 +2,15 @@ import React, { createContext, useContext, useEffect, useState } from "react"
 import { Task } from "../types/task"
 import { loadTasks, saveTasks } from "../services/storage"
 import { v4 as uuidv4 } from "uuid"
-import { usePremium } from "./PremiumContext"
+import * as Notifications from "expo-notifications"
 
 type TaskContextType = {
     tasks: Task[]
-    addTask: (title: string, category?: string) => void
+    addTask: (
+        title: string,
+        category?: string,
+        reminderDate?: string
+    ) => Promise<void>
     toggleTask: (id: string) => void
     deleteTask: (id: string) => void
 }
@@ -15,7 +19,6 @@ const TaskContext = createContext<TaskContextType | undefined>(undefined)
 
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     const [tasks, setTasks] = useState<Task[]>([])
-    const { isPremium } = usePremium()
 
     useEffect(() => {
         loadTasks().then(setTasks)
@@ -25,31 +28,55 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         saveTasks(tasks)
     }, [tasks])
 
-    const addTask = (title: string, category?: string) => {
-        const activeCount = tasks.filter(t => !t.completed).length
-
+    const addTask = async (
+        title: string,
+        category?: string,
+        reminderDate?: string
+    ) => {
         const newTask: Task = {
             id: uuidv4(),
             title,
             completed: false,
             createdAt: new Date().toISOString(),
             category,
+            reminderDate,
         }
 
         setTasks(prev => [newTask, ...prev])
+
+        if (reminderDate) {
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: "Görev zamanı",
+                    body: title,
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.DATE,
+                    date: new Date(reminderDate),
+                },
+            })
+        }
     }
 
     const toggleTask = (id: string) => {
         setTasks(prev =>
-            prev.map(t =>
-                t.id === id
-                    ? {
-                        ...t,
-                        completed: !t.completed,
-                        completedAt: !t.completed ? new Date().toISOString() : undefined,
+            prev.map(task => {
+                if (task.id === id) {
+                    // Eğer tamamlanıyorsa ve hatırlatıcı varsa → bildirimleri iptal et
+                    if (!task.completed && task.reminderDate) {
+                        Notifications.cancelAllScheduledNotificationsAsync()
                     }
-                    : t
-            )
+
+                    return {
+                        ...task,
+                        completed: !task.completed,
+                        completedAt: !task.completed
+                            ? new Date().toISOString()
+                            : undefined,
+                    }
+                }
+                return task
+            })
         )
     }
 
@@ -57,12 +84,8 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         setTasks(prev => prev.filter(t => t.id !== id))
     }
 
-    const activeCount = tasks.filter(t => !t.completed).length
-
     return (
-        <TaskContext.Provider
-            value={{ tasks, addTask, toggleTask, deleteTask }}
-        >
+        <TaskContext.Provider value={{ tasks, addTask, toggleTask, deleteTask }}>
             {children}
         </TaskContext.Provider>
     )
