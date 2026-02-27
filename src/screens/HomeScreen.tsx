@@ -10,7 +10,7 @@ import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { RootStackParamList } from "../types/navigation"
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Main">
 
 export default function HomeScreen() {
     const { tasks, addTask, toggleTask, deleteTask } = useTasks()

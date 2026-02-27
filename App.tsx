@@ -8,6 +8,7 @@ import HomeScreen from "./src/screens/HomeScreen"
 import PremiumScreen from "./src/screens/PremiumScreen"
 import { RootStackParamList } from "./src/types/navigation"
 import * as Notifications from "expo-notifications"
+import DrawerNavigator from "./src/navigation/DrawerNavigator"
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -31,7 +32,7 @@ export default function App() {
       <TaskProvider>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Main" component={DrawerNavigator} />
             <Stack.Screen name="Premium" component={PremiumScreen} />
           </Stack.Navigator>
         </NavigationContainer>
