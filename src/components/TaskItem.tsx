@@ -10,6 +10,25 @@ type Props = {
 }
 
 export default function TaskItem({ task, onToggle, onDelete }: Props) {
+    const getReminderColor = () => {
+        if (!task.reminderDate) return colors.subtext
+
+        const now = new Date()
+        const reminder = new Date(task.reminderDate)
+
+        if (reminder.getTime() < now.getTime()) {
+            return "#ff453a" // geçmiş → kırmızı
+        }
+
+        const diff = reminder.getTime() - now.getTime()
+        const oneHour = 60 * 60 * 1000
+
+        if (diff <= oneHour) {
+            return "#ffd60a" // yaklaşan → sarı
+        }
+
+        return colors.subtext // normal → gri
+    }
     return (
         <View style={styles.card}>
             <TouchableOpacity onPress={onToggle} style={styles.left}>
@@ -29,7 +48,7 @@ export default function TaskItem({ task, onToggle, onDelete }: Props) {
                     )}
 
                     {task.reminderDate && (
-                        <Text style={styles.reminderText}>
+                        <Text style={[styles.reminderText, { color: getReminderColor() }]}>
                             ⏰ {new Date(task.reminderDate).toLocaleString()}
                         </Text>
                     )}
