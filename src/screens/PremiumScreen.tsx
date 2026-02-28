@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { colors } from "../theme/colors"
 import { usePremium } from "../context/PremiumContext"
 import { useNavigation } from "@react-navigation/native"
@@ -12,7 +13,7 @@ export default function PremiumScreen() {
     const navigation = useNavigation<NavigationProp>()
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
             <Text style={styles.title}>Daha Fazlasını Yap</Text>
             <Text style={styles.subtitle}>
                 Sınırsız görev ekle, hatırlatıcıları kullan ve tamamen reklamsız odaklan.
@@ -49,7 +50,7 @@ export default function PremiumScreen() {
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Text style={styles.cancel}>Şimdilik değil</Text>
             </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     )
 }
 
@@ -57,8 +58,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.bg,
-        padding: 20,
-        paddingTop: 60,
+        padding: 16,
     },
     title: {
         color: colors.text,

@@ -24,9 +24,15 @@ type Props = {
         category?: string,
         reminderDate?: string
     ) => void
+    initialReminderDate?: string
 }
 
-export default function AddTaskModal({ visible, onClose, onAdd }: Props) {
+export default function AddTaskModal({
+    visible,
+    onClose,
+    onAdd,
+    initialReminderDate,
+}: Props) {
     const [title, setTitle] = useState("")
     const [selectedCategory, setSelectedCategory] = useState<
         string | undefined
@@ -37,9 +43,15 @@ export default function AddTaskModal({ visible, onClose, onAdd }: Props) {
 
     useEffect(() => {
         if (visible) {
-            setReminderDate(undefined)
             setSelectedCategory(undefined)
             setShowPicker(false)
+
+            // 🔥 Takvimden gelen tarih varsa onu bas
+            if (initialReminderDate) {
+                setReminderDate(new Date(initialReminderDate))
+            } else {
+                setReminderDate(undefined)
+            }
 
             const timer = setTimeout(() => {
                 inputRef.current?.focus()
@@ -47,7 +59,7 @@ export default function AddTaskModal({ visible, onClose, onAdd }: Props) {
 
             return () => clearTimeout(timer)
         }
-    }, [visible])
+    }, [visible, initialReminderDate])
 
     const handleAdd = () => {
         if (!title.trim()) return
@@ -105,7 +117,7 @@ export default function AddTaskModal({ visible, onClose, onAdd }: Props) {
                             </Text>
                         )}
 
-                        {/* DATE PICKER – DÜZELTİLDİ */}
+                        {/* DATE PICKER */}
                         {showPicker && (
                             <View style={styles.pickerContainer}>
                                 <DateTimePicker

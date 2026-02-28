@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { useTasks } from "../context/TaskContext"
 import TaskItem from "../components/TaskItem"
 import AddTaskModal from "../components/AddTaskModal"
@@ -18,8 +19,22 @@ export default function HomeScreen() {
     const { isPremium } = usePremium()
     const navigation = useNavigation<NavigationProp>()
 
-    const totalCount = tasks.length
-    const completedCount = tasks.filter(t => t.completed).length
+    // 🔥 Premium auto-hide filtresi
+    const visibleTasks = useMemo(() => {
+        if (!isPremium) return tasks
+
+        const today = new Date().toISOString().split("T")[0]
+
+        return tasks.filter(task => {
+            if (!task.completed) return true
+
+            const completedDate = task.completedAt?.split("T")[0]
+            return completedDate === today
+        })
+    }, [tasks, isPremium])
+
+    const totalCount = visibleTasks.length
+    const completedCount = visibleTasks.filter(t => t.completed).length
     const activeCount = tasks.filter(t => !t.completed).length
 
     const handleAddTask = (
@@ -47,7 +62,7 @@ export default function HomeScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
             <Text style={styles.title}>Bugünün Görevleri</Text>
 
             <Text style={styles.counter}>
@@ -61,7 +76,7 @@ export default function HomeScreen() {
             )}
 
             <FlatList
-                data={tasks}
+                data={visibleTasks}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
                     <TaskItem
@@ -81,7 +96,7 @@ export default function HomeScreen() {
                 onClose={() => setModalVisible(false)}
                 onAdd={handleAddTask}
             />
-        </View>
+        </SafeAreaView>
     )
 }
 
@@ -89,8 +104,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.bg,
-        padding: 20,
-        paddingTop: 60,
+        padding: 16,
     },
     title: {
         color: colors.text,

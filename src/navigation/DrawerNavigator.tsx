@@ -2,15 +2,12 @@ import { createDrawerNavigator } from "@react-navigation/drawer"
 import HomeScreen from "../screens/HomeScreen"
 import PremiumScreen from "../screens/PremiumScreen"
 import { Text } from "react-native"
+import CalendarScreen from "../screens/CalendarScreen"
 
 const Drawer = createDrawerNavigator()
 
 function SettingsScreen() {
     return <Text>Ayarlar</Text>
-}
-
-function CalendarScreen() {
-    return <Text>Takvim</Text>
 }
 
 export default function DrawerNavigator() {
