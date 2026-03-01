@@ -3,12 +3,9 @@ import HomeScreen from "../screens/HomeScreen"
 import PremiumScreen from "../screens/PremiumScreen"
 import { Text } from "react-native"
 import CalendarScreen from "../screens/CalendarScreen"
+import SettingsScreen from "../screens/SettingsScreen"
 
 const Drawer = createDrawerNavigator()
-
-function SettingsScreen() {
-    return <Text>Ayarlar</Text>
-}
 
 export default function DrawerNavigator() {
     return (
@@ -26,6 +23,7 @@ export default function DrawerNavigator() {
             <Drawer.Screen name="Ana Liste" component={HomeScreen} />
             <Drawer.Screen name="Takvim" component={CalendarScreen} />
             <Drawer.Screen name="Ayarlar" component={SettingsScreen} />
+            <Drawer.Screen name="Premium" component={PremiumScreen} />
         </Drawer.Navigator>
     )
 }

@@ -19,7 +19,7 @@ export default function HomeScreen() {
     const { isPremium } = usePremium()
     const navigation = useNavigation<NavigationProp>()
 
-    // 🔥 Premium auto-hide filtresi
+    // Premium auto-hide
     const visibleTasks = useMemo(() => {
         if (!isPremium) return tasks
 
