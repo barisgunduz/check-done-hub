@@ -9,8 +9,6 @@ import HomeScreen from "../screens/HomeScreen"
 import PremiumScreen from "../screens/PremiumScreen"
 import CalendarScreen from "../screens/CalendarScreen"
 import SettingsScreen from "../screens/SettingsScreen"
-import PomodoroScreen from "../screens/PomodoroScreen"
-import ReminderScreen from "../screens/ReminderScreen"
 import HabitTrackerScreen from "../screens/HabitTrackerScreen"
 import { colors } from "../theme/colors"
 
@@ -52,8 +50,6 @@ export default function DrawerNavigator() {
         >
             <Drawer.Screen name="Ana Liste" component={HomeScreen} />
             <Drawer.Screen name="Takvim" component={CalendarScreen} />
-            <Drawer.Screen name="Pomodoro" component={PomodoroScreen} />
-            <Drawer.Screen name="Hatırlatıcı" component={ReminderScreen} />
             <Drawer.Screen name="Günlük" component={HabitTrackerScreen} />
             <Drawer.Screen name="Ayarlar" component={SettingsScreen} />
             <Drawer.Screen name="Premium" component={PremiumScreen} />
